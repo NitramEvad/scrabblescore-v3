@@ -1,7 +1,11 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://epqhqffynlfuwvpprlcw.supabase.co'
-const supabaseAnonKey = 'sb_publishable_0GVmCKvMYE3LBvJuNlM6Eg_Fd_no8BC'
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+
+if (!supabaseUrl || !supabaseAnonKey) {
+  throw new Error('Missing Supabase environment variables. See .env.example')
+}
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
@@ -24,13 +28,18 @@ export interface Turn {
   duration: number
 }
 
+/** Sanitize a player name for use in PostgREST filter expressions. */
+function sanitizeFilterValue(value: string): string {
+  return value.replace(/[(),.*\\]/g, '')
+}
+
 export async function saveGame(game: GameRecord): Promise<GameRecord | null> {
   const { data, error } = await supabase
     .from('games')
     .insert([game])
     .select()
     .single()
-  
+
   if (error) {
     console.error('Error saving game:', error)
     return null
@@ -43,7 +52,7 @@ export async function getGameHistory(): Promise<GameRecord[]> {
     .from('games')
     .select('*')
     .order('created_at', { ascending: false })
-  
+
   if (error) {
     console.error('Error fetching games:', error)
     return []
@@ -51,12 +60,20 @@ export async function getGameHistory(): Promise<GameRecord[]> {
   return data || []
 }
 
-export async function getHeadToHeadRecord(player1: string, player2: string): Promise<{ wins: number; losses: number; draws: number }> {
+export async function getHeadToHeadRecord(
+  player1: string,
+  player2: string
+): Promise<{ wins: number; losses: number; draws: number }> {
+  const p1 = sanitizeFilterValue(player1)
+  const p2 = sanitizeFilterValue(player2)
+
   const { data, error } = await supabase
     .from('games')
     .select('*')
-    .or(`and(player1.ilike.${player1},player2.ilike.${player2}),and(player1.ilike.${player2},player2.ilike.${player1})`)
-  
+    .or(
+      `and(player1.ilike.${p1},player2.ilike.${p2}),and(player1.ilike.${p2},player2.ilike.${p1})`
+    )
+
   if (error || !data) {
     console.error('Error fetching head to head:', error)
     return { wins: 0, losses: 0, draws: 0 }
@@ -64,7 +81,7 @@ export async function getHeadToHeadRecord(player1: string, player2: string): Pro
 
   const record = { wins: 0, losses: 0, draws: 0 }
   const p1Lower = player1.toLowerCase()
-  
+
   data.forEach((game) => {
     if (!game.winner) {
       record.draws++
@@ -74,6 +91,6 @@ export async function getHeadToHeadRecord(player1: string, player2: string): Pro
       record.losses++
     }
   })
-  
+
   return record
 }
