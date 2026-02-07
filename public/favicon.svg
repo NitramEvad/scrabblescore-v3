@@ -1,4 +1,44 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <rect width="100" height="100" rx="15" fill="#d97706"/>
-  <text x="50" y="68" font-family="Arial, sans-serif" font-size="50" font-weight="bold" fill="white" text-anchor="middle">S</text>
+  <!-- Board background with grid pattern -->
+  <rect width="100" height="100" fill="#1d7b6e"/>
+  
+  <!-- Board grid lines -->
+  <g stroke="#166659" stroke-width="1.5">
+    <line x1="0" y1="25" x2="100" y2="25"/>
+    <line x1="0" y1="50" x2="100" y2="50"/>
+    <line x1="0" y1="75" x2="100" y2="75"/>
+    <line x1="25" y1="0" x2="25" y2="100"/>
+    <line x1="50" y1="0" x2="50" y2="100"/>
+    <line x1="75" y1="0" x2="75" y2="100"/>
+  </g>
+  
+  <!-- Tile shadow -->
+  <rect x="19" y="21" width="66" height="66" rx="5" fill="rgba(0,0,0,0.35)"/>
+  
+  <!-- Tile base (darker edge for 3D effect) -->
+  <rect x="14" y="14" width="66" height="66" rx="5" fill="#c4b18a"/>
+  
+  <!-- Tile top surface -->
+  <rect x="14" y="14" width="64" height="64" rx="5" fill="url(#tileGradient)"/>
+  
+  <!-- Gradient for tile surface -->
+  <defs>
+    <linearGradient id="tileGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#faf6ed"/>
+      <stop offset="50%" style="stop-color:#f2e8d5"/>
+      <stop offset="100%" style="stop-color:#e8dcc4"/>
+    </linearGradient>
+  </defs>
+  
+  <!-- Tile embossed edge (top/left highlight) -->
+  <path d="M18 73 L18 19 Q18 14 23 14 L73 14" fill="none" stroke="#fffdf7" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Tile embossed edge (bottom/right shadow) -->
+  <path d="M23 78 L73 78 Q78 78 78 73 L78 23" fill="none" stroke="#cdc0a8" stroke-width="2" stroke-linecap="round"/>
+  
+  <!-- Letter S -->
+  <text x="46" y="62" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-weight="bold" fill="#1a1408" text-anchor="middle">S</text>
+  
+  <!-- Point value -->
+  <text x="67" y="72" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1a1408">1</text>
 </svg>
