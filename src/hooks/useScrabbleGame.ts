@@ -72,11 +72,23 @@ async function getSlowTurnComment(
   playerName: string,
   durationMs: number
 ): Promise<string> {
+  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+  if (!apiKey) {
+    const fn =
+      slowTurnFallbacks[Math.floor(Math.random() * slowTurnFallbacks.length)]
+    return fn(playerName)
+  }
+
   const minutes = Math.floor(durationMs / 60000)
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 200,
@@ -106,10 +118,20 @@ async function generateVictoryPoemFromAPI(
   winnerScore: number,
   loserScore: number
 ): Promise<string> {
+  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
+  if (!apiKey) {
+    return `All hail ${winnerName}, the Scrabble sovereign!\nWhose letters aligned in ways most buoyant!\nWhile ${loserName} tried their best, it's true,\nBut ${winnerScore} to ${loserScore}? There's nothing they could do!`
+  }
+
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true',
+      },
       body: JSON.stringify({
         model: 'claude-sonnet-4-20250514',
         max_tokens: 1000,

@@ -1,13 +1,12 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient, SupabaseClient } from '@supabase/supabase-js'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables. See .env.example')
-}
-
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const supabase: SupabaseClient | null =
+  supabaseUrl && supabaseAnonKey
+    ? createClient(supabaseUrl, supabaseAnonKey)
+    : null
 
 export interface GameRecord {
   id?: string
@@ -34,6 +33,8 @@ function sanitizeFilterValue(value: string): string {
 }
 
 export async function saveGame(game: GameRecord): Promise<GameRecord | null> {
+  if (!supabase) return null
+
   const { data, error } = await supabase
     .from('games')
     .insert([game])
@@ -48,6 +49,8 @@ export async function saveGame(game: GameRecord): Promise<GameRecord | null> {
 }
 
 export async function getGameHistory(): Promise<GameRecord[]> {
+  if (!supabase) return []
+
   const { data, error } = await supabase
     .from('games')
     .select('*')
@@ -64,6 +67,8 @@ export async function getHeadToHeadRecord(
   player1: string,
   player2: string
 ): Promise<{ wins: number; losses: number; draws: number }> {
+  if (!supabase) return { wins: 0, losses: 0, draws: 0 }
+
   const p1 = sanitizeFilterValue(player1)
   const p2 = sanitizeFilterValue(player2)
 
