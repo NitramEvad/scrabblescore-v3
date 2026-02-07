@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tookay.net — Portfolio</title>
+  <meta name="description" content="Tookay.net — Software development portfolio showcasing web applications and projects.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="icon" type="image/png" href="assets/logo.png">
+</head>
+<body>
+
+  <nav>
+    <div class="nav-brand">TOOKAY<span>.NET</span></div>
+    <ul class="nav-links">
+      <li><a href="index.html" class="active">Home</a></li>
+      <li><a href="#projects">Projects</a></li>
+      <li><a href="bio.html">Bio</a></li>
+      <li><a href="https://github.com/NitramEvad" target="_blank" rel="noopener">GitHub</a></li>
+    </ul>
+  </nav>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-content">
+      <div class="logo-container">
+        <img src="assets/logo.png" alt="Tookay.net logo">
+      </div>
+      <h1>Tookay.net</h1>
+      <p class="tagline">Building things for the web — one project at a time.</p>
+      <div class="cta-group">
+        <a href="#projects" class="btn btn-primary">View Projects</a>
+        <a href="https://github.com/NitramEvad" target="_blank" rel="noopener" class="btn btn-outline">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Projects -->
+  <section id="projects">
+    <h2>Projects</h2>
+    <p class="section-subtitle">Things I've built and shipped.</p>
+
+    <div class="project-grid">
+
+      <div class="project-card">
+        <div class="project-card-image">
+          <div class="scrabble-tiles">
+            <div class="scrabble-tile">S<span class="points">1</span></div>
+            <div class="scrabble-tile">C<span class="points">3</span></div>
+            <div class="scrabble-tile">O<span class="points">1</span></div>
+            <div class="scrabble-tile">R<span class="points">1</span></div>
+            <div class="scrabble-tile">E<span class="points">1</span></div>
+          </div>
+        </div>
+        <div class="project-card-body">
+          <h3>Scrabble Score Tracker</h3>
+          <p>
+            A real-time Scrabble score tracker with turn history, head-to-head records,
+            and AI-generated commentary. Tracks games, crowns winners with poems, and
+            heckles slow players.
+          </p>
+          <div class="tech-tags">
+            <span class="tech-tag">React</span>
+            <span class="tech-tag">TypeScript</span>
+            <span class="tech-tag">Tailwind CSS</span>
+            <span class="tech-tag">Supabase</span>
+            <span class="tech-tag">Claude API</span>
+            <span class="tech-tag">PWA</span>
+          </div>
+          <div class="project-links">
+            <a href="https://scrabblescore.tookay.net" target="_blank" rel="noopener">Live Site &rarr;</a>
+            <a href="https://github.com/NitramEvad/scrabblescore-v3" target="_blank" rel="noopener">Source Code</a>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- About Preview -->
+  <section id="about">
+    <h2>About</h2>
+    <p class="section-subtitle">The person behind the pixels.</p>
+    <div class="bio-preview">
+      <div class="bio-preview-text">
+        <p>
+          I'm a developer who enjoys building useful tools and applications for the web.
+          From score trackers to full-stack apps, I like solving real problems with clean,
+          maintainable code.
+        </p>
+        <a href="bio.html" class="btn btn-outline">Read Full Bio &rarr;</a>
+      </div>
+      <div class="bio-avatar">
+        <img src="assets/logo.png" alt="Tookay.net">
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="footer-links">
+      <a href="index.html">Home</a>
+      <a href="bio.html">Bio</a>
+      <a href="https://github.com/NitramEvad" target="_blank" rel="noopener">GitHub</a>
+    </div>
+    <p>&copy; 2026 Tookay.net. All rights reserved.</p>
+  </footer>
+
+</body>
+</html>
