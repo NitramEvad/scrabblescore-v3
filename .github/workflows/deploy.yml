@@ -20,9 +20,11 @@ jobs:
       
       - name: Install dependencies
         run: npm install
+        working-directory: ./public_html
       
       - name: Build
         run: npm run build
+        working-directory: ./public_html
       
       - name: Upload to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
