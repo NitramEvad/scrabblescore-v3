@@ -31,4 +31,4 @@ jobs:
           username: ${{ secrets.FTP_USERNAME }}
           password: ${{ secrets.FTP_PASSWORD }}
           local-dir: ./dist/
-          server-dir: /domains/tookay.net/public_html/  # Adjust this path
+          server-dir: /public_html/  # Adjust this path
