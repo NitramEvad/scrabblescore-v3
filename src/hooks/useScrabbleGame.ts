@@ -362,6 +362,7 @@ export function useScrabbleGame() {
       winner,
       turns: currentGame.turns,
       duration_minutes: durationMinutes,
+      game_date: new Date().toISOString(),
     }
 
     if (supabase) {
