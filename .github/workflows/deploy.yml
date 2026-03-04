@@ -23,7 +23,9 @@ jobs:
 
       - name: Build
         run: npm run build
-
+        env:
+          VITE_COMMIT_SHA: ${{ github.sha }}
+          
       - name: Upload to FTP
         uses: SamKirkland/FTP-Deploy-Action@v4.3.4
         with:

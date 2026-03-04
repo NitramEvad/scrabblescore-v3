@@ -65,7 +65,7 @@ function App() {
           </h1>
           <div className="w-24 h-0.5 bg-gradient-to-r from-transparent via-amber-600 to-transparent mx-auto mt-2" />
           <p className="text-amber-200/60 mt-2 text-sm tracking-widest uppercase">
-            Score Tracker [V3]
+            Score Tracker [Version: {(import.meta.env.VITE_COMMIT_SHA as string | undefined)?.slice(0, 7) ?? 'dev'}]
           </p>
         </header>
 
