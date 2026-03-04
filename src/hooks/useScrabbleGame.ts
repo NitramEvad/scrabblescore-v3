@@ -369,8 +369,6 @@ export function useScrabbleGame() {
 
       if (!saved) {
         setSaveError('Failed to save game. Please try again.')
-        setIsSaving(false)
-        return
       }
     }
 
