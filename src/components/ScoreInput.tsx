@@ -20,15 +20,15 @@ export function ScoreInput({
       <p className="text-amber-200/80 text-sm mb-2">
         Round {roundNumber} &bull; {currentPlayer}&rsquo;s turn
       </p>
-      <div className="flex gap-3 items-center">
-        <div className="flex-1 flex items-center bg-amber-100/10 border border-amber-400/30 rounded-lg overflow-hidden">
+      <div className="flex gap-2 items-center">
+        <div className="flex-1 flex items-center bg-amber-100/10 border border-amber-400/30 rounded-lg overflow-hidden min-w-0">
           <button
             onClick={() =>
               onChange(
                 Math.max(0, (parseInt(value, 10) || 0) - 1).toString()
               )
             }
-            className="px-4 py-4 text-amber-300 hover:text-amber-100 hover:bg-amber-400/20 active:bg-amber-400/30 transition-all border-r border-amber-400/30 text-xl font-light"
+            className="flex-shrink-0 px-3 py-3 text-amber-300 hover:text-amber-100 hover:bg-amber-400/20 active:bg-amber-400/30 transition-all border-r border-amber-400/30 text-xl font-light"
           >
             −
           </button>
@@ -41,13 +41,13 @@ export function ScoreInput({
             onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
             placeholder="0"
             min="0"
-            className="flex-1 px-4 py-4 bg-transparent text-amber-100 text-xl text-center placeholder-amber-300/50 focus:outline-none"
+            className="w-12 min-w-0 px-1 py-3 bg-transparent text-amber-100 text-xl text-center placeholder-amber-300/50 focus:outline-none"
           />
           <button
             onClick={() =>
               onChange(((parseInt(value, 10) || 0) + 1).toString())
             }
-            className="px-4 py-4 text-amber-300 hover:text-amber-100 hover:bg-amber-400/20 active:bg-amber-400/30 transition-all border-l border-amber-400/30 text-xl font-light"
+            className="flex-shrink-0 px-3 py-3 text-amber-300 hover:text-amber-100 hover:bg-amber-400/20 active:bg-amber-400/30 transition-all border-l border-amber-400/30 text-xl font-light"
           >
             +
           </button>
@@ -55,7 +55,7 @@ export function ScoreInput({
         <button
           onClick={onSubmit}
           disabled={!value}
-          className="px-6 py-4 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
+          className="flex-shrink-0 px-6 py-3 bg-amber-500 hover:bg-amber-400 active:bg-amber-600 disabled:bg-gray-500 disabled:cursor-not-allowed text-white rounded-lg transition-colors font-medium"
         >
           Add
         </button>
