@@ -41,7 +41,7 @@ export function ScoreInput({
             onKeyDown={(e) => e.key === 'Enter' && onSubmit()}
             placeholder="0"
             min="0"
-            className="w-12 min-w-0 px-1 py-3 bg-transparent text-amber-100 text-xl text-center placeholder-amber-300/50 focus:outline-none"
+            className="flex-1 min-w-0 px-1 py-3 bg-transparent text-amber-100 text-xl text-center placeholder-amber-300/50 focus:outline-none"
           />
           <button
             onClick={() =>
