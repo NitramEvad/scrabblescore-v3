@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
+  supabase,
   saveGame,
   getGameHistory,
   getHeadToHeadRecord,
@@ -363,12 +364,14 @@ export function useScrabbleGame() {
       duration_minutes: durationMinutes,
     }
 
-    const saved = await saveGame(gameRecord)
+    if (supabase) {
+      const saved = await saveGame(gameRecord)
 
-    if (!saved) {
-      setSaveError('Failed to save game. Please try again.')
-      setIsSaving(false)
-      return
+      if (!saved) {
+        setSaveError('Failed to save game. Please try again.')
+        setIsSaving(false)
+        return
+      }
     }
 
     const history = await getGameHistory()
