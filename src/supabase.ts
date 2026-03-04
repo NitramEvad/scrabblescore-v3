@@ -10,7 +10,7 @@ export const supabase: SupabaseClient | null =
 
 export interface GameRecord {
   id?: string
-  created_at?: string
+  game_date?: string
   player1: string
   player2: string
   player1_score: number
@@ -54,7 +54,7 @@ export async function getGameHistory(): Promise<GameRecord[]> {
   const { data, error } = await supabase
     .from('games')
     .select('*')
-    .order('created_at', { ascending: false })
+    .order('game_date', { ascending: false })
 
   if (error) {
     console.error('Error fetching games:', error)

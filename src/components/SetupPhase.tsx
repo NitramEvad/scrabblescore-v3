@@ -111,8 +111,8 @@ export function SetupPhase({
                   </span>
                 </div>
                 <div className="text-amber-200/50 text-xs mt-1">
-                  {game.created_at
-                    ? new Date(game.created_at).toLocaleDateString()
+                  {game.game_date
+                    ? new Date(game.game_date).toLocaleDateString()
                     : ''}{' '}
                   &bull; Winner: {game.winner || 'Draw'}
                 </div>
