@@ -366,10 +366,14 @@ export function useScrabbleGame() {
     }
 
     if (supabase) {
-      const saved = await saveGame(gameRecord)
+      const { success, error: saveErr } = await saveGame(gameRecord)
 
-      if (!saved) {
-        setSaveError('Failed to save game. Please try again.')
+      if (!success) {
+        setSaveError(
+          saveErr
+            ? `Failed to save game: ${saveErr}`
+            : 'Failed to save game. Please try again.'
+        )
       }
     }
 

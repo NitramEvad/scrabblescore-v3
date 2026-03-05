@@ -32,20 +32,18 @@ function sanitizeFilterValue(value: string): string {
   return value.replace(/[(),.*\\]/g, '')
 }
 
-export async function saveGame(game: GameRecord): Promise<GameRecord | null> {
-  if (!supabase) return null
+export async function saveGame(
+  game: GameRecord
+): Promise<{ success: boolean; error: string | null }> {
+  if (!supabase) return { success: false, error: null }
 
-  const { data, error } = await supabase
-    .from('games')
-    .insert([game])
-    .select()
-    .single()
+  const { error } = await supabase.from('games').insert([game])
 
   if (error) {
     console.error('Error saving game:', error)
-    return null
+    return { success: false, error: error.message }
   }
-  return data
+  return { success: true, error: null }
 }
 
 export async function getGameHistory(): Promise<GameRecord[]> {
