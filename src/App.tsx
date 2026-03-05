@@ -117,6 +117,7 @@ function App() {
             victoryPoem={game.victoryPoem}
             generatingPoem={game.generatingPoem}
             onNewGame={game.newGame}
+            saveError={game.saveError}
           />
         )}
       </div>
