@@ -8,6 +8,12 @@ export const supabase: SupabaseClient | null =
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null
 
+if (supabase) {
+  console.log('[Supabase] Client initialized for:', supabaseUrl)
+} else {
+  console.warn('[Supabase] Client NOT initialized — VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing')
+}
+
 export interface GameRecord {
   id?: string
   game_date?: string
@@ -37,12 +43,21 @@ export async function saveGame(
 ): Promise<{ success: boolean; error: string | null }> {
   if (!supabase) return { success: false, error: null }
 
-  const { error } = await supabase.from('games').insert([game])
+  console.log('[Supabase] Attempting to save game:', JSON.stringify(game, null, 2))
+
+  const { data, error } = await supabase.from('games').insert([game]).select()
 
   if (error) {
-    console.error('Error saving game:', error)
-    return { success: false, error: error.message }
+    console.error('[Supabase] Insert error:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    })
+    return { success: false, error: `${error.message} (code: ${error.code})` }
   }
+
+  console.log('[Supabase] Game saved successfully:', data)
   return { success: true, error: null }
 }
 
@@ -55,9 +70,15 @@ export async function getGameHistory(): Promise<GameRecord[]> {
     .order('game_date', { ascending: false })
 
   if (error) {
-    console.error('Error fetching games:', error)
+    console.error('[Supabase] Error fetching games:', {
+      message: error.message,
+      code: error.code,
+      details: error.details,
+      hint: error.hint,
+    })
     return []
   }
+  console.log('[Supabase] Fetched', data?.length ?? 0, 'games')
   return data || []
 }
 
@@ -78,7 +99,12 @@ export async function getHeadToHeadRecord(
     )
 
   if (error || !data) {
-    console.error('Error fetching head to head:', error)
+    console.error('[Supabase] Error fetching head to head:', {
+      message: error?.message,
+      code: error?.code,
+      details: error?.details,
+      hint: error?.hint,
+    })
     return { wins: 0, losses: 0, draws: 0 }
   }
 
