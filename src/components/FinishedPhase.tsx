@@ -8,6 +8,7 @@ interface FinishedPhaseProps {
   victoryPoem: string
   generatingPoem: boolean
   onNewGame: () => void
+  saveError: string | null
 }
 
 export function FinishedPhase({
@@ -17,10 +18,17 @@ export function FinishedPhase({
   victoryPoem,
   generatingPoem,
   onNewGame,
+  saveError,
 }: FinishedPhaseProps) {
   return (
     <div className="max-w-md mx-auto">
       <div className="bg-black/20 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-amber-400/30 text-center">
+        {saveError && (
+          <div className="mb-4 p-3 bg-red-500/20 border border-red-400/40 rounded-lg">
+            <p className="text-red-300 text-sm text-center">{saveError}</p>
+          </div>
+        )}
+
         <div className="text-6xl mb-4">🏆</div>
         <h2 className="text-3xl text-amber-100 mb-2">Game Over</h2>
 
