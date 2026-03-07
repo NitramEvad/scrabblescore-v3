@@ -54,7 +54,13 @@ export async function saveGame(
       details: error.details,
       hint: error.hint,
     })
-    return { success: false, error: `${error.message} (code: ${error.code})` }
+    // PostgreSQL error 42501 = insufficient_privilege (RLS policy violation).
+    // Guide the user to the migration file so they know exactly what to run.
+    const message =
+      error.code === '42501'
+        ? 'Row Level Security blocked the insert. Run supabase/migrations/20240101000000_create_games_table.sql in the Supabase SQL editor to add the required anon policies.'
+        : `${error.message} (code: ${error.code})`
+    return { success: false, error: message }
   }
 
   console.log('[Supabase] Game saved successfully:', data)
