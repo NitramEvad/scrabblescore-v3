@@ -224,7 +224,6 @@ export function useScrabbleGame() {
     loadHeadToHead()
   }, [debouncedPlayer1, debouncedPlayer2])
 
-  // Calculate totals
   const calculateTotals = useCallback(
     (game: CurrentGame | null): { player1: number; player2: number } => {
       if (!game?.turns) return { player1: 0, player2: 0 }
@@ -242,7 +241,6 @@ export function useScrabbleGame() {
 
   const totals = calculateTotals(currentGame)
 
-  // Get current player
   const getCurrentPlayer = useCallback((): string | null => {
     if (!currentGame) return null
     return currentGame.turns.length % 2 === 0
@@ -250,7 +248,6 @@ export function useScrabbleGame() {
       : currentGame.player2
   }, [currentGame])
 
-  // Format duration
   const formatDuration = useCallback((ms: number): string => {
     const seconds = Math.floor(ms / 1000)
     const minutes = Math.floor(seconds / 60)
@@ -259,7 +256,6 @@ export function useScrabbleGame() {
     return `${secs} s`
   }, [])
 
-  // Validate player names
   const validatePlayerNames = useCallback((): string | null => {
     const p1 = player1Name.trim()
     const p2 = player2Name.trim()
@@ -271,7 +267,6 @@ export function useScrabbleGame() {
     return null
   }, [player1Name, player2Name])
 
-  // Start a new game
   const startGame = useCallback(() => {
     if (validatePlayerNames()) return
 
@@ -288,7 +283,6 @@ export function useScrabbleGame() {
     setGamePhase('playing')
   }, [player1Name, player2Name, validatePlayerNames])
 
-  // Add a score
   const addScore = useCallback(async () => {
     const score = parseInt(scoreInput, 10)
     if (isNaN(score) || score < 0 || !lastTurnTime) return
@@ -316,7 +310,6 @@ export function useScrabbleGame() {
     }
   }, [scoreInput, lastTurnTime, getCurrentPlayer])
 
-  // Edit a score
   const saveEdit = useCallback(
     (index: number) => {
       const newScore = parseInt(editScore, 10)
@@ -338,7 +331,6 @@ export function useScrabbleGame() {
     [editScore]
   )
 
-  // End game
   const endGame = useCallback(async () => {
     if (!currentGame) return
 
@@ -422,7 +414,6 @@ export function useScrabbleGame() {
     }
   }, [currentGame, calculateTotals])
 
-  // Reset for new game
   const newGame = useCallback(() => {
     setGamePhase('setup')
     setCurrentGame(null)
