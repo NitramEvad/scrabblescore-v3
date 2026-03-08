@@ -14,9 +14,7 @@ export const supabase: SupabaseClient | null =
       })
     : null
 
-if (supabase) {
-  console.log('[Supabase] Client initialized for:', supabaseUrl)
-} else {
+if (!supabase) {
   console.warn('[Supabase] Client NOT initialized — VITE_SUPABASE_URL or VITE_SUPABASE_ANON_KEY is missing')
 }
 
@@ -49,8 +47,6 @@ export async function saveGame(
 ): Promise<{ success: boolean; error: string | null }> {
   if (!supabase) return { success: false, error: null }
 
-  console.log('[Supabase] Attempting to save game:', JSON.stringify(game, null, 2))
-
   const { data, error } = await supabase.from('games').insert([game]).select()
 
   if (error) {
@@ -69,7 +65,6 @@ export async function saveGame(
     return { success: false, error: message }
   }
 
-  console.log('[Supabase] Game saved successfully:', data)
   return { success: true, error: null }
 }
 
@@ -90,7 +85,6 @@ export async function getGameHistory(): Promise<GameRecord[]> {
     })
     return []
   }
-  console.log('[Supabase] Fetched', data?.length ?? 0, 'games')
   return data || []
 }
 
