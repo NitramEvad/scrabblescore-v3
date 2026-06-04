@@ -23,4 +23,10 @@ return [
     // domain, e.g. scrabblescore.tookay.net). Only set this if the frontend is
     // served from a DIFFERENT origin than the API, e.g. 'https://example.com'.
     'allowed_origin' => '',
+
+    // Optional: enables AI-generated victory poems and slow-turn quips. The key
+    // stays on the server and is never sent to the browser. Leave empty to use
+    // the app's built-in fallback text instead.
+    'anthropic_api_key' => '',
+    'anthropic_model'   => 'claude-sonnet-4-20250514',
 ];

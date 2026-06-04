@@ -58,8 +58,44 @@ function send_json(mixed $data, int $status = 200): never
 {
     http_response_code($status);
     header('Content-Type: application/json; charset=utf-8');
+    header('X-Content-Type-Options: nosniff');
     echo json_encode($data);
     exit;
+}
+
+/**
+ * Best-effort per-IP rate limit. Fails open (allows the request) if it can't
+ * read/write its state, so a transient filesystem issue never breaks the app.
+ * Sends a 429 and stops the request when the limit is exceeded.
+ */
+function rate_limit(string $bucket, int $max, int $windowSeconds): void
+{
+    $dir = sys_get_temp_dir() . '/scrabble_ratelimit';
+    if (!is_dir($dir) && !@mkdir($dir, 0700, true) && !is_dir($dir)) {
+        return; // can't create state dir — fail open
+    }
+
+    $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+    $file = $dir . '/' . $bucket . '_' . md5($ip) . '.json';
+    $now = time();
+
+    $hits = [];
+    if (is_file($file)) {
+        $decoded = json_decode((string) @file_get_contents($file), true);
+        if (is_array($decoded)) {
+            $hits = $decoded;
+        }
+    }
+
+    // Keep only timestamps inside the current window.
+    $hits = array_values(array_filter($hits, static fn($t) => $t > $now - $windowSeconds));
+
+    if (count($hits) >= $max) {
+        send_json(['error' => 'Rate limit exceeded. Please slow down.'], 429);
+    }
+
+    $hits[] = $now;
+    @file_put_contents($file, json_encode($hits), LOCK_EX);
 }
 
 /**

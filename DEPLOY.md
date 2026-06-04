@@ -51,11 +51,19 @@ return [
     'db_pass'        => 'your_db_password',
     'db_charset'     => 'utf8mb4',
     'allowed_origin' => '',   // same-origin: leave empty
+
+    // Optional — enables AI poems/quips. Stays server-side, never in the browser.
+    'anthropic_api_key' => 'sk-ant-...',
+    'anthropic_model'   => 'claude-sonnet-4-20250514',
 ];
 ```
 
 That's it — push to `master` (or run the workflow) and the frontend + API deploy
 together.
+
+> **AI poems/quips:** the Anthropic key lives only in `config.local.php` on the
+> server and is proxied through `api/ai.php`, so it is never shipped to the
+> browser. Leave `anthropic_api_key` empty to use the built-in fallback text.
 
 ## Verifying
 

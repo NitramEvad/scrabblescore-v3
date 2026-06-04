@@ -90,3 +90,37 @@ export async function getHeadToHeadRecord(
     return { wins: 0, losses: 0, draws: 0 }
   }
 }
+
+// --- AI text (proxied server-side so the Anthropic key is never in the browser) ---
+// These return null on any failure; callers fall back to built-in text.
+
+async function requestAiText(body: Record<string, unknown>): Promise<string | null> {
+  try {
+    const res = await fetch(`${API_BASE_URL}/ai.php`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(body),
+    })
+    if (!res.ok) return null
+    const data = await res.json()
+    return typeof data?.text === 'string' ? data.text : null
+  } catch {
+    return null
+  }
+}
+
+export function requestVictoryPoem(params: {
+  winner: string
+  loser: string
+  winnerScore: number
+  loserScore: number
+}): Promise<string | null> {
+  return requestAiText({ kind: 'poem', ...params })
+}
+
+export function requestSlowTurnComment(params: {
+  player: string
+  minutes: number
+}): Promise<string | null> {
+  return requestAiText({ kind: 'quip', ...params })
+}

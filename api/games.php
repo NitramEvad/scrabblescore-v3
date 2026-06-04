@@ -7,12 +7,12 @@ require __DIR__ . '/db.php';
 apply_cors();
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
-$pdo = get_db();
 
 /* ----------------------------------------------------------------------------
  * GET /api/games.php — return all games, newest first.
  * -------------------------------------------------------------------------- */
 if ($method === 'GET') {
+    $pdo = get_db();
     $stmt = $pdo->query(
         'SELECT id, game_date, player1, player2, player1_score, player2_score,
                 winner, turns, duration_minutes
@@ -41,6 +41,9 @@ if ($method === 'GET') {
  * POST /api/games.php — insert a new game record.
  * -------------------------------------------------------------------------- */
 if ($method === 'POST') {
+    // Generous limit — guards against spam without blocking real play.
+    rate_limit('save', 120, 3600);
+
     $input = json_decode(file_get_contents('php://input') ?: 'null', true);
 
     if (!is_array($input)) {
@@ -53,6 +56,31 @@ if ($method === 'POST') {
         }
     }
 
+    // Validate and normalise input (defends storage from oversized/garbage data).
+    $player1 = trim((string) $input['player1']);
+    $player2 = trim((string) $input['player2']);
+    if ($player1 === '' || $player2 === '') {
+        send_json(['success' => false, 'error' => 'Player names are required.'], 400);
+    }
+    if (mb_strlen($player1) > 64 || mb_strlen($player2) > 64) {
+        send_json(['success' => false, 'error' => 'Player names are too long.'], 400);
+    }
+
+    $turns = $input['turns'] ?? [];
+    if (!is_array($turns) || count($turns) > 2000) {
+        send_json(['success' => false, 'error' => 'Invalid turns data.'], 400);
+    }
+    $turnsJson = json_encode($turns);
+    if ($turnsJson === false || strlen($turnsJson) > 200000) {
+        send_json(['success' => false, 'error' => 'Turns payload too large.'], 400);
+    }
+
+    $clampScore = static fn($v): int => max(0, min(100000, (int) $v));
+    $winner = isset($input['winner']) && $input['winner'] !== null
+        ? mb_substr(trim((string) $input['winner']), 0, 64)
+        : null;
+
+    $pdo = get_db();
     try {
         $stmt = $pdo->prepare(
             'INSERT INTO games
@@ -65,15 +93,13 @@ if ($method === 'POST') {
 
         $stmt->execute([
             ':game_date' => to_mysql_datetime($input['game_date'] ?? null),
-            ':player1'   => (string) $input['player1'],
-            ':player2'   => (string) $input['player2'],
-            ':p1score'   => (int) $input['player1_score'],
-            ':p2score'   => (int) $input['player2_score'],
-            ':winner'    => isset($input['winner']) && $input['winner'] !== null
-                ? (string) $input['winner']
-                : null,
-            ':turns'     => json_encode($input['turns'] ?? []),
-            ':duration'  => (int) ($input['duration_minutes'] ?? 0),
+            ':player1'   => $player1,
+            ':player2'   => $player2,
+            ':p1score'   => $clampScore($input['player1_score']),
+            ':p2score'   => $clampScore($input['player2_score']),
+            ':winner'    => $winner,
+            ':turns'     => $turnsJson,
+            ':duration'  => $clampScore($input['duration_minutes'] ?? 0),
         ]);
 
         send_json(['success' => true, 'error' => null, 'id' => (string) $pdo->lastInsertId()]);
