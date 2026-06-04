@@ -1,4 +1,4 @@
-import { Turn } from '../supabase'
+import { Turn } from '../api'
 
 interface TurnHistoryProps {
   turns: Turn[]

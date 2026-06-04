@@ -1,12 +1,11 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
-  supabase,
   saveGame,
   getGameHistory,
   getHeadToHeadRecord,
   GameRecord,
   Turn,
-} from '../supabase'
+} from '../api'
 import { useDebounce } from './useDebounce'
 import { SLOW_TURN_THRESHOLD, LOCALSTORAGE_GAME_KEY } from '../constants'
 
@@ -357,16 +356,14 @@ export function useScrabbleGame() {
       game_date: new Date().toISOString(),
     }
 
-    if (supabase) {
-      const { success, error: saveErr } = await saveGame(gameRecord)
+    const { success, error: saveErr } = await saveGame(gameRecord)
 
-      if (!success) {
-        setSaveError(
-          saveErr
-            ? `Failed to save game: ${saveErr}`
-            : 'Failed to save game. Please try again.'
-        )
-      }
+    if (!success) {
+      setSaveError(
+        saveErr
+          ? `Failed to save game: ${saveErr}`
+          : 'Failed to save game. Please try again.'
+      )
     }
 
     const history = await getGameHistory()
