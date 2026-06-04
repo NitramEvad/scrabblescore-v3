@@ -1,4 +1,4 @@
-import { GameRecord } from '../supabase'
+import { GameRecord } from '../api'
 import { HeadToHeadRecord } from '../hooks/useScrabbleGame'
 import { HeadToHead } from './HeadToHead'
 

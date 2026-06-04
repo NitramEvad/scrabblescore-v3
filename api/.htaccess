@@ -1,0 +1,7 @@
+# Don't list directory contents
+Options -Indexes
+
+# Defense in depth: never serve the config files even if PHP handling breaks.
+<FilesMatch "^config.*\.php$">
+    Require all denied
+</FilesMatch>

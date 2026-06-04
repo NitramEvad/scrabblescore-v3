@@ -1,12 +1,13 @@
 import { useState, useEffect, useCallback } from 'react'
 import {
-  supabase,
   saveGame,
   getGameHistory,
   getHeadToHeadRecord,
+  requestVictoryPoem,
+  requestSlowTurnComment,
   GameRecord,
   Turn,
-} from '../supabase'
+} from '../api'
 import { useDebounce } from './useDebounce'
 import { SLOW_TURN_THRESHOLD, LOCALSTORAGE_GAME_KEY } from '../constants'
 
@@ -73,44 +74,13 @@ async function getSlowTurnComment(
   playerName: string,
   durationMs: number
 ): Promise<string> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-  if (!apiKey) {
-    const fn =
-      slowTurnFallbacks[Math.floor(Math.random() * slowTurnFallbacks.length)]
-    return fn(playerName)
-  }
-
   const minutes = Math.floor(durationMs / 60000)
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 200,
-        messages: [
-          {
-            role: 'user',
-            content: `Write a single short, cheeky one-liner (max 15 words) gently mocking ${playerName} for taking ${minutes} minute${minutes > 1 ? 's' : ''} on their Scrabble turn. Be playful and funny, not mean. Just the quip, nothing else.`,
-          },
-        ],
-      }),
-    })
-    const data = await response.json()
-    return (
-      data.content?.[0]?.text ||
-      `${playerName} apparently needed a nap mid-turn...`
-    )
-  } catch {
-    const fn =
-      slowTurnFallbacks[Math.floor(Math.random() * slowTurnFallbacks.length)]
-    return fn(playerName)
-  }
+  const text = await requestSlowTurnComment({ player: playerName, minutes })
+  if (text) return text
+
+  const fn =
+    slowTurnFallbacks[Math.floor(Math.random() * slowTurnFallbacks.length)]
+  return fn(playerName)
 }
 
 async function generateVictoryPoemFromAPI(
@@ -119,40 +89,15 @@ async function generateVictoryPoemFromAPI(
   winnerScore: number,
   loserScore: number
 ): Promise<string> {
-  const apiKey = import.meta.env.VITE_ANTHROPIC_API_KEY
-  if (!apiKey) {
-    return `All hail ${winnerName}, the Scrabble sovereign!\nWhose letters aligned in ways most buoyant!\nWhile ${loserName} tried their best, it's true,\nBut ${winnerScore} to ${loserScore}? There's nothing they could do!`
-  }
+  const text = await requestVictoryPoem({
+    winner: winnerName,
+    loser: loserName,
+    winnerScore,
+    loserScore,
+  })
+  if (text) return text
 
-  try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [
-          {
-            role: 'user',
-            content: `Write a short, playful, slightly over-the-top celebratory poem (4-6 lines) praising ${winnerName} for their glorious Scrabble victory over ${loserName}. The final score was ${winnerScore} to ${loserScore}. Be funny and theatrical, perhaps gently teasing the loser. Keep it lighthearted and fun. Just the poem, no introduction.`,
-          },
-        ],
-      }),
-    })
-    const data = await response.json()
-    return (
-      data.content
-        ?.map((item: { text?: string }) => item.text || '')
-        .join('\n') || 'A worthy champion has emerged!'
-    )
-  } catch {
-    return `All hail ${winnerName}, the Scrabble sovereign!\nWhose letters aligned in ways most buoyant!\nWhile ${loserName} tried their best, it's true,\nBut ${winnerScore} to ${loserScore}? There's nothing they could do!`
-  }
+  return `All hail ${winnerName}, the Scrabble sovereign!\nWhose letters aligned in ways most buoyant!\nWhile ${loserName} tried their best, it's true,\nBut ${winnerScore} to ${loserScore}? There's nothing they could do!`
 }
 
 // --- Main hook ---
@@ -357,16 +302,14 @@ export function useScrabbleGame() {
       game_date: new Date().toISOString(),
     }
 
-    if (supabase) {
-      const { success, error: saveErr } = await saveGame(gameRecord)
+    const { success, error: saveErr } = await saveGame(gameRecord)
 
-      if (!success) {
-        setSaveError(
-          saveErr
-            ? `Failed to save game: ${saveErr}`
-            : 'Failed to save game. Please try again.'
-        )
-      }
+    if (!success) {
+      setSaveError(
+        saveErr
+          ? `Failed to save game: ${saveErr}`
+          : 'Failed to save game. Please try again.'
+      )
     }
 
     const history = await getGameHistory()

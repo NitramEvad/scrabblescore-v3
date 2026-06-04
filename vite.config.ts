@@ -8,6 +8,10 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.ico', 'apple-touch-icon.png'],
+      workbox: {
+        // Never let the SPA fallback or precache intercept the PHP API.
+        navigateFallbackDenylist: [/^\/api\//],
+      },
       manifest: {
         name: 'Scrabble Score Tracker',
         short_name: 'Scrabble',
