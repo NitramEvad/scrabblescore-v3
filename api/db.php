@@ -146,3 +146,56 @@ function to_iso8601(?string $value): ?string
     }
     return $dt->format('Y-m-d\TH:i:s.000\Z');
 }
+
+/**
+ * Call the Anthropic Messages API and return the text, or null on failure.
+ *
+ * Shared by ai.php (poems and quips) and words.php (definitions for the words
+ * the Scrabble list leaves undefined). Every caller builds its own prompt from
+ * a fixed template, so the key never backs a general-purpose LLM proxy.
+ */
+function call_anthropic(string $apiKey, string $model, int $maxTokens, string $prompt): ?string
+{
+    $payload = json_encode([
+        'model'      => $model,
+        'max_tokens' => $maxTokens,
+        'messages'   => [['role' => 'user', 'content' => $prompt]],
+    ]);
+
+    $ch = curl_init('https://api.anthropic.com/v1/messages');
+    curl_setopt_array($ch, [
+        CURLOPT_POST           => true,
+        CURLOPT_RETURNTRANSFER => true,
+        CURLOPT_TIMEOUT        => 30,
+        CURLOPT_HTTPHEADER     => [
+            'Content-Type: application/json',
+            'x-api-key: ' . $apiKey,
+            'anthropic-version: 2023-06-01',
+        ],
+        CURLOPT_POSTFIELDS     => $payload,
+    ]);
+
+    $response = curl_exec($ch);
+    $status = curl_getinfo($ch, CURLINFO_RESPONSE_CODE);
+    $err = curl_error($ch);
+    curl_close($ch);
+
+    if ($response === false || $status < 200 || $status >= 300) {
+        error_log('[scrabble-api] Anthropic call failed: ' . ($err ?: "HTTP {$status}"));
+        return null;
+    }
+
+    $data = json_decode($response, true);
+    if (!is_array($data) || empty($data['content']) || !is_array($data['content'])) {
+        return null;
+    }
+
+    $text = '';
+    foreach ($data['content'] as $block) {
+        if (isset($block['text'])) {
+            $text .= ($text === '' ? '' : "\n") . $block['text'];
+        }
+    }
+
+    return $text !== '' ? $text : null;
+}

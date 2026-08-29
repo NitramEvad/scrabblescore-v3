@@ -5,3 +5,8 @@ Options -Indexes
 <FilesMatch "^config.*\.php$">
     Require all denied
 </FilesMatch>
+
+# The word list is read by words.php — it is not a bulk download.
+<FilesMatch "\.txt$">
+    Require all denied
+</FilesMatch>

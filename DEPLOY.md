@@ -11,6 +11,9 @@ public_html/
     ├── db.php
     ├── games.php
     ├── head-to-head.php
+    ├── ai.php
+    ├── words.php
+    ├── nwl2023.txt                   ← the Scrabble word list (7.5 MB)
     ├── config.example.php
     ├── config.local.php              ← created manually, holds DB credentials
     └── .htaccess
@@ -65,10 +68,38 @@ together.
 > server and is proxied through `api/ai.php`, so it is never shipped to the
 > browser. Leave `anthropic_api_key` empty to use the built-in fallback text.
 
+## The word list
+
+`api/words.php` answers the **Words** lookup in the app. It binary-searches
+`api/nwl2023.txt` — the NASPA Word List 2023, 196,601 entries with their own
+definitions — so a lookup needs no database and no outbound call, and the 7.5 MB
+file is never read into memory. The list deploys with the rest of `api/`, and
+`.htaccess` keeps it from being served as a download.
+
+Not every entry defines itself. Inflected forms point at their base word
+(`AAHED <aah=v>`), which `words.php` resolves with a second search, but around a
+fifth of the list gives only a part of speech (`ACCOUNTANT [n ACCOUNTANTS]`). For
+those the app asks Claude when the user expands the result, caching the answer in
+the system temp directory and labelling it on screen as written by Claude.
+Without `anthropic_api_key` the app just says the list doesn't define the word —
+the green/red verdict never depends on it.
+
+To rebuild the file from a newer word list:
+
+```bash
+node scripts/build-lexicon.mjs path/to/NWL2024.txt   # validates and re-sorts
+```
+
+The word list and its definitions are the copyright of NASPA and Merriam-Webster;
+they ship here for personal use, not redistribution.
+
 ## Verifying
 
 - `https://scrabblescore.tookay.net/api/games.php` should return `[]` (or a JSON
   list of games), not a PHP error.
+- `https://scrabblescore.tookay.net/api/words.php?w=qi` should return
+  `"valid":true` with a definition.
+- `https://scrabblescore.tookay.net/api/nwl2023.txt` should be **forbidden**.
 - Play and finish a game; it should appear under **Game History**.
 
 ## Running on a Raspberry Pi instead
