@@ -124,3 +124,66 @@ export function requestSlowTurnComment(params: {
 }): Promise<string | null> {
   return requestAiText({ kind: 'quip', ...params })
 }
+
+// --- Word lookup (validity from the Scrabble word list, definitions with it) ---
+
+export interface WordSense {
+  definition: string | null
+  /** Set when the list files this word as a form of another, e.g. DID of DO. */
+  formOf: string | null
+  /** What that other word means, when this sense has no meaning of its own. */
+  formOfDefinition: string | null
+  partOfSpeech: string | null
+  inflections: string[]
+  related: { word: string; partOfSpeech: string | null }[]
+}
+
+export interface WordLookupResult {
+  word: string
+  valid: boolean
+  lexicon: string
+  lexiconName: string
+  /** Why the word isn't playable. Null when it is. */
+  reason: string | null
+  /** False when the list confirms the word but doesn't define it. */
+  hasDefinition: boolean
+  senses: WordSense[]
+}
+
+export interface WordDefinition {
+  word: string
+  definition: string | null
+  /** 'lexicon' | 'claude', or null when no definition could be found. */
+  source: string | null
+}
+
+/**
+ * Look a word up in the Scrabble word list.
+ *
+ * Throws rather than returning a verdict when the API can't be reached, so a
+ * network problem is never mistaken for "not a word".
+ */
+export async function lookupWord(word: string): Promise<WordLookupResult> {
+  const res = await fetch(`${API_BASE_URL}/words.php?w=${encodeURIComponent(word)}`)
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok || typeof data?.valid !== 'boolean') {
+    throw new Error(data?.error ?? `Lookup failed (HTTP ${res.status})`)
+  }
+
+  return data as WordLookupResult
+}
+
+/** Fetch a definition for a valid word the list itself leaves undefined. */
+export async function defineWord(word: string): Promise<WordDefinition> {
+  const res = await fetch(
+    `${API_BASE_URL}/words.php?w=${encodeURIComponent(word)}&define=1`
+  )
+  const data = await res.json().catch(() => null)
+
+  if (!res.ok || data === null) {
+    throw new Error(data?.error ?? `Definition lookup failed (HTTP ${res.status})`)
+  }
+
+  return data as WordDefinition
+}

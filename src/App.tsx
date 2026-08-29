@@ -4,10 +4,12 @@ import { backgroundPatterns } from './constants'
 import { SetupPhase } from './components/SetupPhase'
 import { PlayingPhase } from './components/PlayingPhase'
 import { FinishedPhase } from './components/FinishedPhase'
+import { WordLookup } from './components/WordLookup'
 
 function App() {
   const game = useScrabbleGame()
   const [bgIndex, setBgIndex] = useState(0)
+  const [lookupOpen, setLookupOpen] = useState(false)
 
   if (game.isLoading) {
     return (
@@ -42,6 +44,15 @@ function App() {
             'linear-gradient(135deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.2) 100%)',
         }}
       />
+
+      {/* Word lookup — reachable from every phase, for mid-game challenges */}
+      <button
+        onClick={() => setLookupOpen(true)}
+        className="absolute top-4 left-4 z-20 px-3 py-2 bg-black/30 hover:bg-black/50 active:bg-black/60 text-amber-200/70 hover:text-amber-200 text-xs rounded-full transition-all border border-amber-400/20"
+        aria-label="Words: look one up in the Scrabble word list"
+      >
+        Words
+      </button>
 
       {/* Background cycle button */}
       <button
@@ -121,6 +132,8 @@ function App() {
           />
         )}
       </div>
+
+      {lookupOpen && <WordLookup onClose={() => setLookupOpen(false)} />}
     </div>
   )
 }
