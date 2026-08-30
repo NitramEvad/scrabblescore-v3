@@ -14,7 +14,7 @@ export default defineConfig({
       },
       manifest: {
         name: 'Scrabble Score Tracker',
-        short_name: 'Scrabble',
+        short_name: 'Scrabble Score',
         description: 'Track your Scrabble games with style',
         theme_color: '#d97706',
         background_color: '#2a2520',
