@@ -1,44 +1,51 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
-  <!-- Board background with grid pattern -->
-  <rect width="100" height="100" fill="#1d7b6e"/>
-  
-  <!-- Board grid lines -->
-  <g stroke="#166659" stroke-width="1.5">
-    <line x1="0" y1="25" x2="100" y2="25"/>
-    <line x1="0" y1="50" x2="100" y2="50"/>
-    <line x1="0" y1="75" x2="100" y2="75"/>
-    <line x1="25" y1="0" x2="25" y2="100"/>
-    <line x1="50" y1="0" x2="50" y2="100"/>
-    <line x1="75" y1="0" x2="75" y2="100"/>
-  </g>
-  
-  <!-- Tile shadow -->
-  <rect x="19" y="21" width="66" height="66" rx="5" fill="rgba(0,0,0,0.35)"/>
-  
-  <!-- Tile base (darker edge for 3D effect) -->
-  <rect x="14" y="14" width="66" height="66" rx="5" fill="#c4b18a"/>
-  
-  <!-- Tile top surface -->
-  <rect x="14" y="14" width="64" height="64" rx="5" fill="url(#tileGradient)"/>
-  
-  <!-- Gradient for tile surface -->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
   <defs>
-    <linearGradient id="tileGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#faf6ed"/>
-      <stop offset="50%" style="stop-color:#f2e8d5"/>
-      <stop offset="100%" style="stop-color:#e8dcc4"/>
+    <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#413830"/>
+      <stop offset="0.55" stop-color="#2b2520"/>
+      <stop offset="1" stop-color="#1c1815"/>
     </linearGradient>
+    <radialGradient id="glow" cx="0.3" cy="0.22" r="0.8">
+      <stop offset="0" stop-color="#f59e0b" stop-opacity="0.42"/>
+      <stop offset="0.5" stop-color="#d97706" stop-opacity="0.12"/>
+      <stop offset="1" stop-color="#d97706" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="face" x1="0.1" y1="0" x2="0.85" y2="1">
+      <stop offset="0" stop-color="#fffdf7"/>
+      <stop offset="0.45" stop-color="#f7edd9"/>
+      <stop offset="1" stop-color="#e4d5b8"/>
+    </linearGradient>
+    <linearGradient id="edge" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#c3ad86"/>
+      <stop offset="1" stop-color="#9c8663"/>
+    </linearGradient>
+    <filter id="cast" x="-35%" y="-35%" width="170%" height="180%">
+      <feDropShadow dx="0" dy="27.3" stdDeviation="29.2"
+                    flood-color="#120e0a" flood-opacity="0.62"/>
+    </filter>
   </defs>
+
+  <rect width="512" height="512" fill="url(#ground)"/>
   
-  <!-- Tile embossed edge (top/left highlight) -->
-  <path d="M18 73 L18 19 Q18 14 23 14 L73 14" fill="none" stroke="#fffdf7" stroke-width="2" stroke-linecap="round"/>
+  <rect width="512" height="512" fill="url(#glow)"/>
+
+  <g filter="url(#cast)">
+    <rect x="24" y="33.7" width="464" height="464"
+          rx="55.7" fill="url(#edge)"/>
+    <rect x="24" y="14.3" width="464" height="464"
+          rx="55.7" fill="url(#face)"/>
+  </g>
+
+  <!-- Bevel: light where the glow falls, shadow on the far side. -->
   
-  <!-- Tile embossed edge (bottom/right shadow) -->
-  <path d="M23 78 L73 78 Q78 78 78 73 L78 23" fill="none" stroke="#cdc0a8" stroke-width="2" stroke-linecap="round"/>
-  
-  <!-- Letter S -->
-  <text x="46" y="62" font-family="Georgia, 'Times New Roman', serif" font-size="44" font-weight="bold" fill="#1a1408" text-anchor="middle">S</text>
-  
-  <!-- Point value -->
-  <text x="67" y="72" font-family="Arial, Helvetica, sans-serif" font-size="11" font-weight="bold" fill="#1a1408">1</text>
+
+  <text x="237.4" y="384.8"
+        font-family="Bitstream Charter, Georgia, 'Times New Roman', serif"
+        font-size="352.6" font-weight="bold"
+        fill="#231a10" text-anchor="middle">S</text>
+
+  <text x="427.7" y="431.9"
+        font-family="Bitstream Charter, Georgia, 'Times New Roman', serif"
+        font-size="102.1" font-weight="bold"
+        fill="#231a10" text-anchor="middle">1</text>
 </svg>
